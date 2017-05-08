@@ -1,16 +1,17 @@
 package br.com.montreal;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class ProdutosApplicationTests {
 
 	@Test
 	public void contextLoads() {
 	}
 
+	public static void main(String[] args) {
+        new SpringApplicationBuilder()
+                .sources(ProdutosConfiguracao.class)
+                .build().run(args);
+    }
 }

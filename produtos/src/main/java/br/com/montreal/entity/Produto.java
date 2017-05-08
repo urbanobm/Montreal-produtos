@@ -20,6 +20,7 @@ public class Produto {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID", nullable = false)
 	private Long id;
 
 	@Column(name = "NOME")
@@ -29,13 +30,13 @@ public class Produto {
 	private String descricao;
 
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name = "ID_PRODUTO_PAI")
+	@JoinColumn(name = "ID_PRODUTO_PAI", referencedColumnName = "ID")
 	private Produto produtoPai;
 	
 	@OneToMany(mappedBy="produto", cascade=CascadeType.ALL)
 	private List<ImagemProduto> imagens;
 
-	@OneToMany(mappedBy="produtoPai")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="produtoPai")
 	private List<Produto> produtosFilhos;
 
 	public Long getId() {
@@ -76,6 +77,31 @@ public class Produto {
 
 	public void setImagens(List<ImagemProduto> imagens) {
 		this.imagens = imagens;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Produto other = (Produto) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 	
 	

@@ -5,14 +5,35 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.CollectionUtils;
 
 import br.com.montreal.entity.ImagemProduto;
 import br.com.montreal.entity.ImagemTipo;
 import br.com.montreal.entity.Produto;
 
-
+@TestPropertySource(locations = "classpath:application.properties")
+@Configuration
+@EnableAutoConfiguration
+@EntityScan("br.com.montreal.entity")
+@EnableJpaRepositories("br.com.montreal.repository")
+@ComponentScan({"br.com.montreal"})
+@EnableAspectJAutoProxy
+@PropertySource("classpath:application.properties")
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ProdutoServiceTest {
 
 	@Autowired
@@ -32,6 +53,7 @@ public class ProdutoServiceTest {
 		
 		produtoService.deleteProduto(produto.getId());
 		produtos = produtoService.recuperarProdutos();
+		System.out.println(produtos);
 		Assert.assertTrue(CollectionUtils.isEmpty(produtos));
 	}
 	
@@ -72,9 +94,10 @@ public class ProdutoServiceTest {
 
 	@Test
 	public void recuperarProdutosFilhos(){
-		Produto produtoFilho = criarProdutoQualquer();
-		Produto produtoPai = criarProdutoPai(produtoFilho);
+		Produto produtoPai = criarProdutoQualquer();
+		Produto produtoFilho = criarProdutoFilho(produtoPai);
 		List<Produto> produtos = produtoService.recuperarProdutosFilhos(produtoPai.getId());
+		produtoService.recuperarProdutos();
 		Assert.assertFalse(CollectionUtils.isEmpty(produtos));
 		Assert.assertEquals(produtoFilho, produtos.get(0));
 	}
@@ -88,27 +111,22 @@ public class ProdutoServiceTest {
 		Assert.assertFalse(CollectionUtils.isEmpty(imagens));
 	}
 
-	private Produto criarProdutoPai(Produto produtoFilho) {
+	private Produto criarProdutoFilho(final Produto produtoPai) {
 		String nome = "Panela de pressão";
 		String descricao = "Panela de pressão";
-		Produto produtoPai = criarProduto(nome, descricao, ImagemTipo.PNG);
-		
-		produtoPai = produtoService.salvarProduto(produtoPai);
-		produtoFilho.setProdutoPai(produtoPai);
-		produtoFilho = produtoService.salvarProduto(produtoFilho);
-		
-		return produtoService.recuperarProduto(produtoPai.getId());
+		Produto produtoFilho = criarProduto(produtoPai, nome, descricao, ImagemTipo.PNG);
+		return produtoService.salvarProduto(produtoFilho);
 	}
 
 	private Produto criarProdutoQualquer() {
 		String nome = "Panela de pressão 4 litros";
 		String descricao = "Panela de pressão de 4 litros Tramontina";
-		Produto produto = criarProduto(nome, descricao, ImagemTipo.JPG);
+		Produto produto = criarProduto(null, nome, descricao, ImagemTipo.JPG);
 		
 		return produtoService.salvarProduto(produto);
 	}
 
-	private Produto criarProduto(String nome, String descricao, ImagemTipo tipoImagem) {
+	private Produto criarProduto(Produto produtoPai, String nome, String descricao, ImagemTipo tipoImagem) {
 		Produto produto = new Produto();
 		produto.setNome(nome);
 		produto.setDescricao(descricao);
@@ -117,6 +135,7 @@ public class ProdutoServiceTest {
 		img.setTipo(tipoImagem);
 		List<ImagemProduto> imagens = Arrays.asList(img);
 		produto.setImagens(imagens);
+		produto.setProdutoPai(produtoPai);
 		return produto;
 	}
 	
