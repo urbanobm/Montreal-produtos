@@ -10,7 +10,7 @@ public class ClasseDriverH2Test {
 		try {
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
-			Assert.fail("Erro claase não encontrada: " + e.getMessage());
+			Assert.fail("Erro classe não encontrada: " + e.getMessage());
 		}
 	}
 }
