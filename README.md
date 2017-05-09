@@ -13,7 +13,7 @@ Seguem algumas informações úteis a respeito da aplicação:
 2- Exemplos de cada chamada da api:
 
   A classe br.com.montreal.service.ProdutoServiceTest tem exemplos de chamadas de todos os métodos da API do CRUD de produtos.
-  O pacote onde se encontra a classe "ProdutoServiceTest" se encontra na "\src\test\java" que está na raiz do projeto.
+  O pacote onde está a classe "ProdutoServiceTest" se encontra na pasta "\src\test\java" que está na raiz do projeto.
 
 
 3- Como executar a suíte de testes automatizados:
